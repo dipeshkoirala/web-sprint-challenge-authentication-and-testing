@@ -60,7 +60,7 @@ router.post('/login', async (req, res,next) => {
 
   try {
 		const { username, password } = req.body
-		const user = await Users.findByName(username)
+		const user = await Auth.findByName(username)
 		
 		if (!user) {
 			return res.status(401).json({
@@ -77,7 +77,7 @@ router.post('/login', async (req, res,next) => {
 		}
     const token=jwt.sign({
 			userId:user.id,
-			userRole:user.role,
+			
 		}, process.env.JWT_SECRET)
 		
 res.cookie("token", token)
