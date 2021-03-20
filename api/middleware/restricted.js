@@ -12,7 +12,7 @@ const token=req.cookies.token
 if(!token){
   return res.status(401).json(authenticateError)
 }
-jwt.verify(token,process.env.JWT_SECRET, (err,decoded)=>{
+jwt.verify(token,process.env.JWT_SECRET||"wrong", (err,decoded)=>{
   if(err){
     return res.status(401).json(authorizeError)
   }
