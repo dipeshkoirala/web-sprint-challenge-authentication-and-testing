@@ -13,12 +13,12 @@ router.post('/register', async (req, res,next) => {
 
     const authUser=await Auth.findByName(username)
 
-    if(user){
+    if(authUser){
 
     return res.status(409).json({message:"username taken"})
     }
 
-    const newUser = await Users.add({
+    const newUser = await Auth.add({
 			username,
 			password: await bcrypt.hash(password, 14),
 		})
@@ -28,7 +28,7 @@ router.post('/register', async (req, res,next) => {
   }catch(err){
     next(err)
   }
-  res.end('implement register, please!');
+  // res.end('implement register, please!');
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -90,7 +90,7 @@ res.cookie("token", token)
 		next(err)
 	}
 
-  res.end('implement login, please!');
+  // res.end('implement login, please!');
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
