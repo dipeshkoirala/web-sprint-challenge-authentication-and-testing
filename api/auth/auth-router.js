@@ -1,6 +1,33 @@
+const express=require("express")
+const bcrypt=require("bcryptjs")
+const Auth=require("./auth-model")
+const jwt=require("jsonwebtoken")
+const {restrict}=require("../middleware/restricted")
 const router = require('express').Router();
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res,next) => {
+  try{
+
+
+    const {username,password}=req.body
+
+    const authUser=await Auth.findByName(username)
+
+    if(user){
+
+    return res.status(409).json({message:"username taken"})
+    }
+
+    const newUser = await Users.add({
+			username,
+			password: await bcrypt.hash(password, 14),
+		})
+
+		res.status(201).json(newUser)
+
+  }catch(err){
+    next(err)
+  }
   res.end('implement register, please!');
   /*
     IMPLEMENT
@@ -28,7 +55,41 @@ router.post('/register', (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res,next) => {
+
+
+  try {
+		const { username, password } = req.body
+		const user = await Users.findByName(username)
+		
+		if (!user) {
+			return res.status(401).json({
+				message: "username and password required",
+			})
+		}
+
+		const passwordValid = await bcrypt.compare(password, user.password)
+
+		if (!passwordValid) {
+			return res.status(401).json({
+				message: "Invalid Credentials",
+			})
+		}
+    const token=jwt.sign({
+			userId:user.id,
+			userRole:user.role,
+		}, process.env.JWT_SECRET)
+		
+res.cookie("token", token)
+		res.json({
+			message: `Welcome ${user.username}!`,
+      token:token
+			
+		})
+	}catch(err) {
+		next(err)
+	}
+
   res.end('implement login, please!');
   /*
     IMPLEMENT
